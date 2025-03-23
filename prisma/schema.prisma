@@ -1,0 +1,78 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+model EquityInfo {
+  symbol      String   @id @db.VarChar(10)
+  companyName String   @db.VarChar(255)
+  industry    String   @db.VarChar(255)
+  isin        String   @db.VarChar(255)
+  slbIsin     String?  @db.VarChar(255)
+
+  EquityMetadata      EquityMetadata?
+  EquityPriceInfo     EquityPriceInfo?
+  EquityIndustryInfo  EquityIndustryInfo?
+}
+
+model EquityMetadata {
+  symbol          String   @unique @db.VarChar(10)
+  series          String   @db.VarChar(255)
+  isin            String   @db.VarChar(255)
+  status          String   @db.VarChar(255)
+  listingDate     DateTime?
+  industry        String   @db.VarChar(255)
+  lastUpdateTime  DateTime?
+  pdSectorPe      Float?
+  pdSymbolPe      Float?
+  pdSectorInd     String?  @db.VarChar(255)
+  equityInfo      EquityInfo @relation(fields: [symbol], references: [symbol])
+}
+
+model EquityPriceInfo {
+  symbol                String   @unique @db.VarChar(10)
+  lastPrice             Float?
+  change                Float?
+  pChange               Float?
+  previousClose         Float?
+  open                  Float?
+  close                 Float?
+  vwap                  Float?
+  stockIndClosePrice    Float?
+  lowerCp               String? @db.VarChar(255)
+  upperCp               String? @db.VarChar(255)
+  pPriceBand            String? @db.VarChar(255)
+  basePrice             Float?
+  min                   Float?
+  max                   Float?
+  intradayHighLowValue  Float?
+  weekHighLowMin        Float?
+  weekHighLowMinDate    DateTime?
+  weekHighLowMax        Float?
+  weekHighLowMaxDate    DateTime?
+  weekHighLowValue      Float?
+  iNavValue             Float?
+  checkINav             Boolean?
+  tickSize              Float?
+  equityInfo            EquityInfo @relation(fields: [symbol], references: [symbol])
+}
+
+model EquityIndustryInfo {
+  symbol        String   @unique @db.VarChar(10)
+  macro         String?  @db.VarChar(255)
+  sector        String?  @db.VarChar(255)
+  industry      String?  @db.VarChar(255)
+  basicIndustry String?  @db.VarChar(255)
+  equityInfo    EquityInfo @relation(fields: [symbol], references: [symbol])
+}
